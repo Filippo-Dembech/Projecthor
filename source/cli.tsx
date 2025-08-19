@@ -10,20 +10,22 @@ const cli = meow(
 	  $ projector
 
 	Options
-		--name  Your name
-
-	Examples
-	  $ projector --name=Jane
-	  Hello, Jane
+        --shell | -sh   The shell to use
+        --name  | -n    The name of the new project
 `,
 	{
 		importMeta: import.meta,
 		flags: {
-			name: {
+			shell: {
 				type: 'string',
+                shortFlag: "sh",
 			},
+            name: {
+                type: "string",
+                shortFlag: "n",
+            }
 		},
 	},
 );
 
-render(<App name={cli.flags.name} />);
+render(<App projectName={cli.flags.name} shell={cli.flags.shell}/>);
