@@ -28,6 +28,41 @@ const cli = meow(
 		\t--full, -f\t\tShow full projects data with
 
 		setdf\t\t\t\tSet a default folder where all project are stored
+	
+	Project Setup File
+	
+		Project setup files (.psup) are files with a specific syntax that can be used
+		to save one or more projects without using 'projector' save interface. They require
+		a specific format:
+
+		PROJECT:
+			NAME: <project_name>
+			FOLDER: <project_folder_path>
+			COMMANDS:
+				<first_command>
+				<second_command>
+				...
+				<nth_command>
+		
+		Multiple projects can be declared in a .psup file:
+
+		PROJECT:
+			NAME: ...
+			FOLDER: ...
+			COMMANDS:
+				...
+
+		PROJECT:
+			NAME: ...
+			FOLDER: ...
+			COMMANDS:
+				...
+
+		PROJECT:
+			NAME: ...
+			FOLDER: ...
+			COMMANDS:
+				...
 `,
 	{
 		importMeta: import.meta,
