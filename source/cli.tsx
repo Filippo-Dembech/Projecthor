@@ -5,6 +5,7 @@ import meow from 'meow';
 import App from './app.js';
 import SaveInterface from './SaveInterface.js';
 import { execa } from 'execa';
+import chalk from 'chalk';
 
 const projects = [
 	{
@@ -27,7 +28,7 @@ const projects = [
 const cli = meow(
 	`
 	Usage
-	  $ projector
+	  $ projector <command> <args[]> <options> 
 
 	Commands
 		save\t\t\tsave a project workspace
@@ -66,7 +67,6 @@ if (!hasCommand()) {
 	const [command, ...args] = cli.input;
 	
 	if (command === "save") {
-		console.log("saving project workspace...")
 		render(<SaveInterface />)
 	}
 
@@ -76,18 +76,17 @@ if (!hasCommand()) {
 		else {
 			for (let projectName of args) {
 				// check if the passed project exist
-				if (!isExistingProject(projectName)) console.log(`Project '${projectName}' not found!`)
+				if (!isExistingProject(projectName)) console.log(`Project '${chalk.blue.bold(projectName)}' not found!`)
 				else {
-					console.log(`loading project '${projectName}'...`)
+					console.log(`loading project '${chalk.blue.bold(projectName)}'...`)
 					const project = projects.find(project => project.name === projectName)!;	// using '!' because project must exist because of 'isExistingProject()' check before
 					const shell = cli.flags.shell;
 					for (let command of project.setupCommands) {
-						const {stdout} = shell
+						shell
 						? await execa({cwd: project.folder, shell})`${command}`
 						: await execa({cwd: project.folder})`${command}`;
-						console.log(stdout);
 					}
-					console.log(`'${project.name}' workspace successfully loaded!`);
+					console.log(`'${project.name}' workspace ${chalk.green.bold("successfully")} loaded!`);
 				}
 			}
 		}
