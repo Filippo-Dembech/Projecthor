@@ -13,6 +13,7 @@ const ProjectContext = createContext<ProjectContextData | undefined>(undefined);
 
 function ProjectProvider({ children }: { children: ReactNode}) {
     
+    
     const [project, setProject] = useState<Project>({
         name: "",
         folder: "",

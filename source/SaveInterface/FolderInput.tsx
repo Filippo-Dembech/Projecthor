@@ -4,6 +4,7 @@ import RequiredInput from "../RequiredInput.js";
 import { Task } from "ink-task-list";
 import { useProject } from "../context/ProjectContext.js";
 import fs from 'fs';
+import { getDefaultFolder } from "../db.js";
 
 interface FolderInputProps {
 	onSubmit: () => void
@@ -12,6 +13,8 @@ interface FolderInputProps {
 export default function FolderInput({ onSubmit }: FolderInputProps) {
     
 	const { project, setFolder } = useProject();
+	
+	const defaultFolder = getDefaultFolder()
     
     return (
         
@@ -32,6 +35,7 @@ export default function FolderInput({ onSubmit }: FolderInputProps) {
 					) : (
 						<RequiredInput
 							label="Folder"
+							value={defaultFolder || ""}
 							placeholder="insert project folder path"
 							errorMessage="Project path cannot be empty."
 							onSubmit={(folder, setError) => {

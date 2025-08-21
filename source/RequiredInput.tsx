@@ -5,6 +5,7 @@ import {useState} from 'react';
 
 interface RequiredInputProps {
 	label: string;
+	value?: string;
 	placeholder: string;
     errorMessage: string;
     onSubmit: (value: string, setError: React.Dispatch<React.SetStateAction<string>>) => void;
@@ -12,6 +13,7 @@ interface RequiredInputProps {
 
 export default function RequiredInput({
 	label,
+	value,
 	placeholder,
     errorMessage,
     onSubmit,
@@ -27,6 +29,7 @@ export default function RequiredInput({
 		<>
 			<Text bold={!isFocused}>{label}: </Text>
 			<UncontrolledTextInput
+				initialValue={value}
 				focus={isFocused}
 				placeholder={placeholder}
 				onSubmit={value => {

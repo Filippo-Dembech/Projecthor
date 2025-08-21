@@ -2,12 +2,12 @@
 import React from 'react';
 import {render} from 'ink';
 import meow from 'meow';
-import App from './app.js';
 import SaveInterface from './SaveInterface/SaveInterface.js';
-import {execa} from 'execa';
+import {execa, ExecaError} from 'execa';
 import chalk from 'chalk';
-import {getProjects} from './db.js';
+import {getProjects, setDefaultFolder} from './db.js';
 import {ProjectProvider} from './context/ProjectContext.js';
+import fs from 'fs';
 
 const projects = getProjects();
 
@@ -17,11 +17,14 @@ const cli = meow(
 	  $ projector <command> <args[]> <options> 
 
 	Commands
-		save\t\t\tsave a project workspace
-		load <project_name[]>\tload the workspace of the passed projects
+		save\t\t\tSave a project workspace
+		load <project_name[]>\tLoad the workspace of the passed projects
+		list\t\t\tList of all the available projects
+		setdf\t\t\tSet a default folder where all project are stored
 		
 	Options
 		--shell, -sh\tWhich shell to use to run project setup commands
+		\t\t(use only with 'load' command);
 `,
 	{
 		importMeta: import.meta,
@@ -29,6 +32,10 @@ const cli = meow(
 			shell: {
 				type: 'string',
 				alias: 's',
+			},
+			full: {
+				type: 'boolean',
+				alias: 'f',
 			},
 		},
 	},
@@ -58,6 +65,27 @@ if (!hasCommand()) {
 				<SaveInterface />
 			</ProjectProvider>,
 		);
+	} else if (command === 'list') {
+		if (cli.flags.full) {
+			console.log(projects);
+		} else {
+			for (let project of projects) {
+				console.log(project.name);
+			}
+		}
+	} else if (command === 'setdf') {
+		if (args.length === 0) {
+			console.log(
+				'No default folder passed. Please insert a default folder path.',
+			);
+		} else {
+			const defaultFolderPath = args[0]!;
+			if (!fs.existsSync(defaultFolderPath)) {
+				console.log(`Path '${defaultFolderPath}' doesn't exist.`);
+			} else {
+				setDefaultFolder(defaultFolderPath);
+			}
+		}
 	} else if (command === 'load') {
 		// check if project name has been passed
 		if (!hasProjects()) console.log('No project has been passed');
@@ -72,21 +100,26 @@ if (!hasCommand()) {
 						project => project.name === projectName,
 					)!; // using '!' because project must exist because of 'isExistingProject()' check before
 					const shell = cli.flags.shell;
-					for (let command of project.setupCommands) {
-						const {stdout} = shell
-							? await execa({cwd: project.folder, shell})`${command}`
-							: await execa({cwd: project.folder})`${command}`;
-						if (stdout) console.log(stdout);
+					try {
+						for (let command of project.setupCommands) {
+							const {stdout} = shell
+								? await execa({cwd: project.folder, shell})`${command}`
+								: await execa({cwd: project.folder})`${command}`;
+							if (stdout) console.log(stdout);
+						}
+						console.log(
+							`'${project.name}' workspace ${chalk.green.bold(
+								'successfully',
+							)} loaded!`,
+						);
+					} catch (err) {
+						console.error((err as ExecaError).originalMessage);
 					}
-					console.log(
-						`'${project.name}' workspace ${chalk.green.bold(
-							'successfully',
-						)} loaded!`,
-					);
 				}
 			}
 		}
 	} else {
-		render(<App />);
+		console.log(chalk.yellow(`command '${command}' does not exist.`))
+		console.log(cli.showHelp());
 	}
 }

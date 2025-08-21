@@ -1,24 +1,19 @@
 {
+  "defaultFolder": "c://",
   "projects": [
     {
-      "name": "asdf",
-      "folder": "asdf",
+      "name": "first project",
+      "folder": "c://users/Filippo Dembech/CS/Projects/super-project",
       "setupCommands": [
-        "asdf",
-        "asdf",
-        "sdf",
-        "asdf",
-        "npm run start",
-        "clone sdflsdf"
+        "node main.js"
       ]
     },
     {
-      "name": "first Project",
-      "folder": "c://users",
+      "name": "freeuron",
+      "folder": "C://users/filippo dembech/cs/projects/freeuron",
       "setupCommands": [
-        "sdf",
-        "sdf",
-        "sdf"
+        "code .",
+        "wt.exe ."
       ]
     }
   ]
