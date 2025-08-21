@@ -11,6 +11,15 @@
         "npm run start",
         "clone sdflsdf"
       ]
+    },
+    {
+      "name": "first Project",
+      "folder": "c://users",
+      "setupCommands": [
+        "sdf",
+        "sdf",
+        "sdf"
+      ]
     }
   ]
 }

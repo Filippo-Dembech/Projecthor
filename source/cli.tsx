@@ -3,27 +3,13 @@ import React from 'react';
 import {render} from 'ink';
 import meow from 'meow';
 import App from './app.js';
-import SaveInterface from './SaveInterface.js';
-import { execa } from 'execa';
+import SaveInterface from './SaveInterface/SaveInterface.js';
+import {execa} from 'execa';
 import chalk from 'chalk';
+import {getProjects} from './db.js';
+import {ProjectProvider} from './context/ProjectContext.js';
 
-const projects = [
-	{
-		name: "super-project",
-		folder: 'C:\\Users\\Filippo Dembech\\CS\\Projects\\super-project\\',
-		setupCommands: [
-			'node main.js',
-		]
-	},
-	{
-		name: "freeuron",
-		folder: 'C:\\Users\\Filippo Dembech\\CS\\Projects\\freeuron\\',
-		setupCommands: [
-			'code .',
-			'wt.exe -d .'
-		]
-	}
-]
+const projects = getProjects();
 
 const cli = meow(
 	`
@@ -42,7 +28,7 @@ const cli = meow(
 		flags: {
 			shell: {
 				type: 'string',
-                alias: "s",
+				alias: 's',
 			},
 		},
 	},
@@ -65,36 +51,42 @@ if (!hasCommand()) {
 	cli.showHelp();
 } else {
 	const [command, ...args] = cli.input;
-	
-	if (command === "save") {
-		render(<SaveInterface />)
-	}
 
-	else if (command === "load") {
+	if (command === 'save') {
+		render(
+			<ProjectProvider>
+				<SaveInterface />
+			</ProjectProvider>,
+		);
+	} else if (command === 'load') {
 		// check if project name has been passed
-		if (!hasProjects()) console.log("No project has been passed")
+		if (!hasProjects()) console.log('No project has been passed');
 		else {
 			for (let projectName of args) {
 				// check if the passed project exist
-				if (!isExistingProject(projectName)) console.log(`Project '${chalk.blue.bold(projectName)}' not found!`)
+				if (!isExistingProject(projectName))
+					console.log(`Project '${chalk.blue.bold(projectName)}' not found!`);
 				else {
-					console.log(`loading project '${chalk.blue.bold(projectName)}'...`)
-					const project = projects.find(project => project.name === projectName)!;	// using '!' because project must exist because of 'isExistingProject()' check before
+					console.log(`loading project '${chalk.blue.bold(projectName)}'...`);
+					const project = projects.find(
+						project => project.name === projectName,
+					)!; // using '!' because project must exist because of 'isExistingProject()' check before
 					const shell = cli.flags.shell;
 					for (let command of project.setupCommands) {
 						const {stdout} = shell
-						? await execa({cwd: project.folder, shell})`${command}`
-						: await execa({cwd: project.folder})`${command}`;
+							? await execa({cwd: project.folder, shell})`${command}`
+							: await execa({cwd: project.folder})`${command}`;
 						if (stdout) console.log(stdout);
 					}
-					console.log(`'${project.name}' workspace ${chalk.green.bold("successfully")} loaded!`);
+					console.log(
+						`'${project.name}' workspace ${chalk.green.bold(
+							'successfully',
+						)} loaded!`,
+					);
 				}
 			}
 		}
-	}
-
-	else {
+	} else {
 		render(<App />);
 	}
 }
-
