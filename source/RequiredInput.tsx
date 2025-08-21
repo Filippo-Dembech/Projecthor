@@ -7,7 +7,7 @@ interface RequiredInputProps {
 	label: string;
 	placeholder: string;
     errorMessage: string;
-    onSubmit: (value: string) => void;
+    onSubmit: (value: string, setError: React.Dispatch<React.SetStateAction<string>>) => void;
 }
 
 export default function RequiredInput({
@@ -33,7 +33,7 @@ export default function RequiredInput({
 					if (value === '') {
 						setError(errorMessage);
 					} else {
-                        onSubmit(value);
+                        onSubmit(value, setError);
 					}
 				}}
 			/>

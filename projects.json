@@ -1,0 +1,16 @@
+{
+  "projects": [
+    {
+      "name": "asdf",
+      "folder": "asdf",
+      "setupCommands": [
+        "asdf",
+        "asdf",
+        "sdf",
+        "asdf",
+        "npm run start",
+        "clone sdflsdf"
+      ]
+    }
+  ]
+}

@@ -3,22 +3,11 @@ import {Box, Text, useApp, useFocusManager, useInput} from 'ink';
 import RequiredInput from './RequiredInput.js';
 import {Task} from 'ink-task-list';
 import TextInput from 'ink-text-input';
-import { JSONFileSyncPreset } from 'lowdb/node';
+import {Project} from './types.js';
+import {getProjects, saveProject} from './db.js';
+import chalk from 'chalk';
+import fs from 'fs';
 
-
-interface Project {
-	name: string;
-	folder: string;
-	setupCommands: string[];
-}
-
-interface DBData {
-	projects: Project[]
-}
-
-const defaultProjects: DBData = { projects: [] }
-
-const db = JSONFileSyncPreset<DBData>("db.json", defaultProjects);
 
 export default function SaveInterface() {
 	const [project, setProject] = useState<Project>({
@@ -28,20 +17,29 @@ export default function SaveInterface() {
 	});
 
 	const [currentInput, setCurrentInput] = useState('name');
-    const [currentCommand, setCurrentCommand] = useState("");
+	const [currentCommand, setCurrentCommand] = useState('');
 	const {focus} = useFocusManager();
-	const {exit} = useApp()
+	const {exit} = useApp();
 
 	useEffect(() => {
 		focus(currentInput);
 	}, [currentInput]);
-	
+
 	useInput(async (input, key) => {
-		if (input === "s" && key.ctrl) {
-			db.update(({projects}) => projects.push(project))
-			exit();
+		if (input === 's' && key.ctrl) {
+			if (getProjects().some(p => p.name === project.name)) {
+				exit();
+				console.log(
+					chalk.red.bold(
+						`Project '${project.name}' already exist. Can't create another project instance.`,
+					),
+				);
+			} else {
+				saveProject(project);
+				exit();
+			}
 		}
-	})
+	});
 
 	return (
 		<Box flexDirection="column" paddingTop={1}>
@@ -84,7 +82,14 @@ export default function SaveInterface() {
 					)}
 				</Box>
 				{(currentInput === 'folder' || currentInput === 'commands') && (
-					<Box gap={1} paddingX={1}>
+					<Box
+						gap={1}
+						paddingX={1}
+						borderStyle="single"
+						borderTop={false}
+						borderRight={false}
+						borderLeft={false}
+					>
 						{project.folder ? (
 							<>
 								<Text bold>Folder: </Text>
@@ -96,7 +101,11 @@ export default function SaveInterface() {
 								label="Folder"
 								placeholder="project folder"
 								errorMessage="Project folder path cannot be empty."
-								onSubmit={folder => {
+								onSubmit={(folder, setError) => {
+									if (!fs.existsSync(folder)) {
+										setError("This folder doesn't exist");
+										return;
+									}
 									setProject(project => ({...project, folder}));
 									setCurrentInput('commands');
 								}}
@@ -105,24 +114,30 @@ export default function SaveInterface() {
 					</Box>
 				)}
 				{currentInput === 'commands' && (
-					<Box flexDirection="column">
-						<Text>Commands: <Text color="gray">(Ctrl + s to save project)</Text></Text>
-						{project.setupCommands.map((command, i) => (
-							<Text key={`${command}-${i}`}>
-								Command {i + 1}: {command}
-							</Text>
-						))}
-						<TextInput
-                            value={currentCommand}
-                            onChange={(command) => setCurrentCommand(command)}
-							onSubmit={command => {
-								setProject(project => ({
-									...project,
-									setupCommands: [...project.setupCommands, command],
-								}));
-                                setCurrentCommand("");
-							}}
-						/>
+					<Box flexDirection="column" paddingX={1}>
+						<Text>Commands: </Text>
+						<Box marginTop={1} flexDirection='column'>
+							{project.setupCommands.map((command, i) => (
+								<Text key={`${command}-${i}`}>
+									Command {i + 1}  <Text color="blue">{command}</Text>
+								</Text>
+							))}
+							<Box>
+								<Text>Command {project.setupCommands.length + 1}: </Text>
+								<TextInput
+									value={currentCommand}
+									onChange={command => setCurrentCommand(command)}
+									onSubmit={command => {
+										setProject(project => ({
+											...project,
+											setupCommands: [...project.setupCommands, command],
+										}));
+										setCurrentCommand('');
+									}}
+								/>
+							</Box>
+						</Box>
+						<Text color="gray">('Ctrl + s' to save project)</Text>
 					</Box>
 				)}
 			</Box>
