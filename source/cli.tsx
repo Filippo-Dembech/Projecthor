@@ -5,9 +5,10 @@ import meow from 'meow';
 import SaveInterface from './SaveInterface/SaveInterface.js';
 import {execa, ExecaError} from 'execa';
 import chalk from 'chalk';
-import {getProjects, setDefaultFolder} from './db.js';
+import {getProjects, saveProject, setDefaultFolder} from './db.js';
 import {ProjectProvider} from './context/ProjectContext.js';
 import fs from 'fs';
+import { parseProjectSetupFile } from './parser.js';
 
 const projects = getProjects();
 
@@ -18,13 +19,14 @@ const cli = meow(
 
 	Commands
 		save\t\t\tSave a project workspace
+
 		load <project_name[]>\tLoad the workspace of the passed projects
+		\t--shell, -sh\tWhich shell to use to run project setup commands
+
 		list\t\t\tList of all the available projects
+		\t--full, -f\tShow full projects data with
+
 		setdf\t\t\tSet a default folder where all project are stored
-		
-	Options
-		--shell, -sh\tWhich shell to use to run project setup commands
-		\t\t(use only with 'load' command);
 `,
 	{
 		importMeta: import.meta,
@@ -36,6 +38,9 @@ const cli = meow(
 			full: {
 				type: 'boolean',
 				alias: 'f',
+			},
+			source: {
+				type: 'string',
 			},
 		},
 	},
@@ -54,17 +59,49 @@ function isExistingProject(projectName: string): boolean {
 	return projects.some(project => project.name === projectName);
 }
 
+
 if (!hasCommand()) {
 	cli.showHelp();
 } else {
 	const [command, ...args] = cli.input;
 
 	if (command === 'save') {
-		render(
-			<ProjectProvider>
-				<SaveInterface />
-			</ProjectProvider>,
-		);
+		const projectSetupFile = cli.flags.source;
+		if (projectSetupFile) {
+			if (!fs.existsSync(projectSetupFile)) {
+				console.log(
+					chalk.yellow(
+						`Project setup file '${projectSetupFile}' doesn't exist.`,
+					),
+				);
+			} else if (!projectSetupFile.endsWith('.psup')) {
+				console.log(
+					chalk.yellow(
+						"Wrong extension. Project setup files must have '.psup' extension.",
+					),
+				);
+			} else {
+				try {
+					const projects = await parseProjectSetupFile(projectSetupFile);
+					for (let project of projects) {
+						saveProject(project);
+						console.log(
+							`${chalk.green('OK')}: Project '${chalk.green(
+								project.name,
+							)}' has been successfully saved!`,
+						);
+					}
+				} catch (err) {
+					console.log(err);
+				}
+			}
+		} else {
+			render(
+				<ProjectProvider>
+					<SaveInterface />
+				</ProjectProvider>,
+			);
+		}
 	} else if (command === 'list') {
 		if (cli.flags.full) {
 			console.log(projects);
@@ -76,12 +113,18 @@ if (!hasCommand()) {
 	} else if (command === 'setdf') {
 		if (args.length === 0) {
 			console.log(
-				'No default folder passed. Please insert a default folder path.',
+				chalk.yellow(
+					'No default folder passed. Please insert a default folder path.',
+				),
 			);
 		} else {
 			const defaultFolderPath = args[0]!;
 			if (!fs.existsSync(defaultFolderPath)) {
-				console.log(`Path '${defaultFolderPath}' doesn't exist.`);
+				console.log(
+					chalk.yellow(
+						`Path '${chalk.bold(defaultFolderPath)}' doesn't exist.`,
+					),
+				);
 			} else {
 				setDefaultFolder(defaultFolderPath);
 			}
@@ -119,7 +162,7 @@ if (!hasCommand()) {
 			}
 		}
 	} else {
-		console.log(chalk.yellow(`command '${command}' does not exist.`))
+		console.log(chalk.yellow(`command '${command}' does not exist.`));
 		console.log(cli.showHelp());
 	}
 }
