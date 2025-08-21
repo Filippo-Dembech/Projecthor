@@ -82,9 +82,10 @@ if (!hasCommand()) {
 					const project = projects.find(project => project.name === projectName)!;	// using '!' because project must exist because of 'isExistingProject()' check before
 					const shell = cli.flags.shell;
 					for (let command of project.setupCommands) {
-						shell
+						const {stdout} = shell
 						? await execa({cwd: project.folder, shell})`${command}`
 						: await execa({cwd: project.folder})`${command}`;
+						if (stdout) console.log(stdout);
 					}
 					console.log(`'${project.name}' workspace ${chalk.green.bold("successfully")} loaded!`);
 				}
