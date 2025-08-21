@@ -18,15 +18,16 @@ const cli = meow(
 	  $ projector <command> <args[]> <options> 
 
 	Commands
-		save\t\t\tSave a project workspace
+		save\t\t\t\tSave a project workspace
+		\t --source <file_path>\tProject setup file (.psup file) to setup new projects quickly
 
-		load <project_name[]>\tLoad the workspace of the passed projects
-		\t--shell, -sh\tWhich shell to use to run project setup commands
+		load <project_name[]>\t\tLoad the workspace of the passed projects
+		\t--shell, -sh\t\tWhich shell to use to run project setup commands
 
-		list\t\t\tList of all the available projects
-		\t--full, -f\tShow full projects data with
+		list\t\t\t\tList of all the available projects
+		\t--full, -f\t\tShow full projects data with
 
-		setdf\t\t\tSet a default folder where all project are stored
+		setdf\t\t\t\tSet a default folder where all project are stored
 `,
 	{
 		importMeta: import.meta,
