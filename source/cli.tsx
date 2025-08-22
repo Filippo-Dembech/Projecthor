@@ -164,10 +164,12 @@ if (!hasCommand()) {
 		}
 	} else if (command === 'list') {
 		if (projects.length === 0) {
-				console.log("No Project is present.\n");
-				console.log("Use 'projector save' to save new projects."); 
-				console.log("You can also use '.psup' files with the '--source' option to save multiple projects faster.");
-				console.log("Type 'projector --help, -h' for help.");
+			console.log('No Project is present.\n');
+			console.log("Use 'projector save' to save new projects.");
+			console.log(
+				"You can also use '.psup' files with the '--source' option to save multiple projects faster.",
+			);
+			console.log("Type 'projector --help, -h' for help.");
 		} else if (cli.flags.full) {
 			console.log(projects);
 		} else {
@@ -192,14 +194,16 @@ if (!hasCommand()) {
 				setDefaultFolder(defaultFolderPath);
 			}
 		}
-	} else if (command === "getdf"){
+	} else if (command === 'getdf') {
 		const defaultFolder = getDefaultFolder();
 		if (!defaultFolder) {
-			console.log("No default folder has been set yet.\n");
-			console.log("To set a default folder use 'projector setdf <default_folder_path>' command.");
-			console.log("For further help use 'projector --help, -h'.")
+			console.log('No default folder has been set yet.\n');
+			console.log(
+				"To set a default folder use 'projector setdf <default_folder_path>' command.",
+			);
+			console.log("For further help use 'projector --help, -h'.");
 		} else {
-			console.log("default folder:", getDefaultFolder());
+			console.log('default folder:', getDefaultFolder());
 		}
 	} else if (command === 'load') {
 		// check if project name has been passed
@@ -241,6 +245,34 @@ if (!hasCommand()) {
 				}
 			}
 		}
+	} else if (command === 'purge') {
+		if (projects.length === 0) {
+			console.log('No Project is present.\n');
+			console.log("Use 'projector save' to save new projects.");
+			console.log(
+				"You can also use '.psup' files with the '--source' option to save multiple projects faster.",
+			);
+			console.log("Type 'projector --help, -h' for help.");
+		} else {
+			const answer: string = await new Promise(resolve => {
+				const prompt = readline.createInterface({
+					input: process.stdin,
+					output: process.stdout,
+				});
+				prompt.question(`Are you sure you wanna purge the db? (y/n) `, ans => {
+					prompt.close();
+					resolve(ans);
+				});
+			});
+
+			if (answer.toLowerCase() === 'y') {
+				for (let project of projects) {
+					if (!fs.existsSync(project.folder)) {
+						deleteProject(project);
+					}
+				}
+			}
+		}
 	} else if (command === 'delete') {
 		if (!hasProjectArgs()) console.log('No project has been passed');
 		else {
@@ -257,7 +289,7 @@ if (!hasCommand()) {
 							output: process.stdout,
 						});
 						prompt.question(
-							`Do you want to delete '${chalk.blue.bold(projectName)}': (y/n) `,
+							`Do you want to delete '${chalk.blue.bold(projectName)}'? (y/n) `,
 							ans => {
 								prompt.close();
 								resolve(ans);
