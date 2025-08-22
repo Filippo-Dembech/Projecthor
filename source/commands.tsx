@@ -3,7 +3,7 @@ import {ProjectProvider} from './context/ProjectContext.js';
 import SaveInterface from './SaveInterface/SaveInterface.js';
 import fs from 'fs';
 import chalk from 'chalk';
-import { printWarning } from './feedback/warnings.js';
+import { warnNoSetupFileExists, warnWrongExtension } from './feedback/warnings.js';
 import {parseProjectSetupFile} from './parser.js';
 import {isValidProject} from './validation.js';
 import {printError} from './feedback/errors.js';
@@ -28,11 +28,9 @@ import { feedbackProjectSaved } from './feedback/feedbacks.js';
 export async function saveCommand(projectSetupFile?: string) {
 	if (projectSetupFile) {
 		if (!fs.existsSync(projectSetupFile)) {
-			printWarning(`Project setup file '${projectSetupFile}' doesn't exist.`);
+            warnNoSetupFileExists(projectSetupFile);
 		} else if (!projectSetupFile.endsWith('.psup')) {
-			printWarning(
-				"Wrong extension. Project setup files must have '.psup' extension.",
-			);
+            warnWrongExtension();
 		} else {
 			try {
 				const projects = await parseProjectSetupFile(projectSetupFile);
