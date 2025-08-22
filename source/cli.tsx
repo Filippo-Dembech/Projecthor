@@ -1,6 +1,4 @@
 #!/usr/bin/env node
-import React from 'react';
-import {render} from 'ink';
 import meow from 'meow';
 import {execa, ExecaError} from 'execa';
 import chalk from 'chalk';
@@ -11,11 +9,10 @@ import {
 	setDefaultFolder,
 } from './db.js';
 import fs from 'fs';
-import Projects from './Projects.js';
 import readline from 'readline';
 import path from 'path';
 import {helpMessage} from './help.js';
-import { saveCommand } from './commands.js';
+import { listCommand, saveCommand } from './commands.js';
 
 const projects = getProjects();
 
@@ -65,55 +62,9 @@ if (!hasCommand()) {
 	const [command, ...args] = cli.input;
 
 	if (command === 'save') {
-		const projectSetupFile = cli.flags.source;
-		saveCommand(projectSetupFile);
-		// if (projectSetupFile) {
-		// 	if (!fs.existsSync(projectSetupFile)) {
-		// 		printWarning(`Project setup file '${projectSetupFile}' doesn't exist.`);
-		// 	} else if (!projectSetupFile.endsWith('.psup')) {
-		// 		printWarning(
-		// 			"Wrong extension. Project setup files must have '.psup' extension.",
-		// 		);
-		// 	} else {
-		// 		try {
-		// 			const projects = await parseProjectSetupFile(projectSetupFile);
-		// 			for (let project of projects) {
-		// 				const {isValid, errorMessage} = isValidProject(project);
-		// 				if (!isValid) {
-		// 					console.log(error(errorMessage));
-		// 				} else {
-		// 					saveProject(project);
-		// 					console.log(
-		// 						`${chalk.green('OK')}: Project '${chalk.green(
-		// 							project.name,
-		// 						)}' has been successfully saved!`,
-		// 					);
-		// 				}
-		// 			}
-		// 		} catch (err) {
-		// 			console.log(err);
-		// 		}
-		// 	}
-		// } else {
-		// 	render(
-		// 		<ProjectProvider>
-		// 			<SaveInterface />
-		// 		</ProjectProvider>,
-		// 	);
-		// }
+		saveCommand(cli.flags.source);
 	} else if (command === 'list') {
-		if (projects.length === 0) {
-			console.log('No Project is present.\n');
-			console.log("Use 'projector save' to save new projects.");
-			console.log(
-				"You can also use '.psup' files with the '--source' option to save multiple projects faster.",
-			);
-			console.log("Type 'projector --help, -h' for help.");
-		} else if (cli.flags.full) {
-			console.log(projects);
-		} else {
-			render(<Projects projects={projects} />);
-		}
+		listCommand(projects, cli.flags.full);
 	} else if (command === 'setdf') {
 		if (args.length === 0) {
 			console.log(
