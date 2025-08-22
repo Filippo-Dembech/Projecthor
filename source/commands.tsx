@@ -3,10 +3,10 @@ import {ProjectProvider} from './context/ProjectContext.js';
 import SaveInterface from './SaveInterface/SaveInterface.js';
 import fs from 'fs';
 import chalk from 'chalk';
-import { printWarning } from './errors/errors.js';
+import { printWarning } from './feedback/warnings.js';
 import {parseProjectSetupFile} from './parser.js';
 import {isValidProject} from './validation.js';
-import {error} from './errors/errors.js';
+import {printError} from './feedback/errors.js';
 import {
 	deleteProject,
 	existProjectFolder,
@@ -23,6 +23,7 @@ import Projects from './Projects.js';
 import path from 'path';
 import {execa, ExecaError} from 'execa';
 import readline from 'readline';
+import { feedbackProjectSaved } from './feedback/feedbacks.js';
 
 export async function saveCommand(projectSetupFile?: string) {
 	if (projectSetupFile) {
@@ -38,14 +39,10 @@ export async function saveCommand(projectSetupFile?: string) {
 				for (let project of projects) {
 					const {isValid, errorMessage} = isValidProject(project);
 					if (!isValid) {
-						console.log(error(errorMessage));
+                        printError(errorMessage!);
 					} else {
 						saveProject(project);
-						console.log(
-							`${chalk.green('OK')}: Project '${chalk.green(
-								project.name,
-							)}' has been successfully saved!`,
-						);
+                        feedbackProjectSaved(project);
 					}
 				}
 			} catch (err) {

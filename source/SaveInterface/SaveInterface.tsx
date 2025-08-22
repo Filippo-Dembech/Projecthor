@@ -6,7 +6,7 @@ import NameInput from './NameInput.js';
 import FolderInput from './FolderInput.js';
 import CommandsInput from './CommandsInput.js';
 import {useProject} from '../context/ProjectContext.js';
-import { alreadyExistingProjectError } from '../errors/errors.js';
+import { alreadyExistingProjectError } from '../feedback/errors.js';
 
 export default function SaveInterface() {
 	const {project} = useProject();
