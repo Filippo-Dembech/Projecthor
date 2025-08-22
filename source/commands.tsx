@@ -7,10 +7,11 @@ import {printWarning} from './utils.js';
 import {parseProjectSetupFile} from './parser.js';
 import {isValidProject} from './validation.js';
 import {error} from './errors/errors.js';
-import {saveProject} from './db.js';
+import {saveProject, setDefaultFolder} from './db.js';
 import {render} from 'ink';
-import { Project } from './types.js';
+import {Project} from './types.js';
 import Projects from './Projects.js';
+import path from 'path';
 
 export async function saveCommand(projectSetupFile?: string) {
 	if (projectSetupFile) {
@@ -61,5 +62,24 @@ export function listCommand(projects: Project[], fullFlag?: boolean) {
 		console.log(projects);
 	} else {
 		render(<Projects projects={projects} />);
+	}
+}
+
+export function setdfCommand(args: string[]) {
+	if (args.length === 0) {
+		console.log(
+			chalk.yellow(
+				'No default folder passed. Please insert a default folder path.',
+			),
+		);
+	} else {
+		const defaultFolderPath = args[0]!;
+		if (!fs.existsSync(path.resolve(defaultFolderPath))) {
+			console.log(
+				chalk.yellow(`Path '${chalk.bold(defaultFolderPath)}' doesn't exist.`),
+			);
+		} else {
+			setDefaultFolder(defaultFolderPath);
+		}
 	}
 }

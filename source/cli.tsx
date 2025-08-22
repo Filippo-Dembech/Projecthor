@@ -6,13 +6,11 @@ import {
 	deleteProject,
 	getDefaultFolder,
 	getProjects,
-	setDefaultFolder,
 } from './db.js';
 import fs from 'fs';
 import readline from 'readline';
-import path from 'path';
 import {helpMessage} from './help.js';
-import { listCommand, saveCommand } from './commands.js';
+import { listCommand, saveCommand, setdfCommand } from './commands.js';
 
 const projects = getProjects();
 
@@ -66,24 +64,7 @@ if (!hasCommand()) {
 	} else if (command === 'list') {
 		listCommand(projects, cli.flags.full);
 	} else if (command === 'setdf') {
-		if (args.length === 0) {
-			console.log(
-				chalk.yellow(
-					'No default folder passed. Please insert a default folder path.',
-				),
-			);
-		} else {
-			const defaultFolderPath = args[0]!;
-			if (!fs.existsSync(path.resolve(defaultFolderPath))) {
-				console.log(
-					chalk.yellow(
-						`Path '${chalk.bold(defaultFolderPath)}' doesn't exist.`,
-					),
-				);
-			} else {
-				setDefaultFolder(defaultFolderPath);
-			}
-		}
+		setdfCommand(args);
 	} else if (command === 'getdf') {
 		const defaultFolder = getDefaultFolder();
 		if (!defaultFolder) {
