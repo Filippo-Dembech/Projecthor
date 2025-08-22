@@ -3,7 +3,7 @@ import {ProjectProvider} from './context/ProjectContext.js';
 import SaveInterface from './SaveInterface/SaveInterface.js';
 import fs from 'fs';
 import chalk from 'chalk';
-import {printWarning} from './utils.js';
+import { printWarning } from './errors/errors.js';
 import {parseProjectSetupFile} from './parser.js';
 import {isValidProject} from './validation.js';
 import {error} from './errors/errors.js';
