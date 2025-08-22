@@ -32,6 +32,20 @@ export function getProjects(): Project[] {
 	return db.data.projects;
 }
 
+export function isExistingProject(projectName: string): boolean {
+	return getProjects().some(project => project.name === projectName);
+}
+
+export function existProjectFolder(projectName: string): boolean {
+	return fs.existsSync(
+		getProjects().find(project => project.name === projectName)!.folder,
+	); // Using '!' because project must exist because of previous 'isExistingProject' check
+}
+
+export function getProjectFolder(projectName: string): string {
+	return getProjects().find(project => project.name === projectName)!.folder;
+}
+
 export function getDefaultFolder() {
 	return db.data.defaultFolder;
 }
