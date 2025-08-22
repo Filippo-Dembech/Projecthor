@@ -36,12 +36,14 @@ const cli = meow(
 		load <project_name[]>\t\tLoad the workspace of the passed project(s)
 		\t--shell, -sh\t\tWhich shell to use to run project setup commands
 
+		delete <project_name[]>\t\tDelete the passed project workspace(s)
+
 		list\t\t\t\tList of all the available projects
 		\t--full, -f\t\tShow full projects data with
 
 		setdf\t\t\t\tSet a default folder where all project are stored
-		
-		delete <project_name[]>\t\tDelete the passed project workspace(s)
+
+		getdf\t\t\t\tGet the current default folder
 	
 	Project Setup File
 	
@@ -191,7 +193,14 @@ if (!hasCommand()) {
 			}
 		}
 	} else if (command === "getdf"){
-		console.log("default folder:", getDefaultFolder());
+		const defaultFolder = getDefaultFolder();
+		if (!defaultFolder) {
+			console.log("No default folder has been set yet.\n");
+			console.log("To set a default folder use 'projector setdf <default_folder_path>' command.");
+			console.log("For further help use 'projector --help, -h'.")
+		} else {
+			console.log("default folder:", getDefaultFolder());
+		}
 	} else if (command === 'load') {
 		// check if project name has been passed
 		if (!hasProjectArgs()) console.log('No project has been passed');
