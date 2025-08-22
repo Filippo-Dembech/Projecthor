@@ -12,6 +12,7 @@ import {parseProjectSetupFile} from './parser.js';
 import {printWarning} from './utils.js';
 import { isValidProject } from './validation.js';
 import { error } from './errors/errors.js';
+import Projects from './Projects.js';
 
 const projects = getProjects();
 
@@ -141,9 +142,12 @@ if (!hasCommand()) {
 		if (cli.flags.full) {
 			console.log(projects);
 		} else {
-			for (let project of projects) {
-				console.log(project.name);
-			}
+			render(
+				<Projects projects={projects} />
+			)
+			// for (let project of projects) {
+			// 	console.log(project.name);
+			// }
 		}
 	} else if (command === 'setdf') {
 		if (args.length === 0) {
