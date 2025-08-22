@@ -1,35 +1,35 @@
-import { LowSync } from "lowdb";
-import { Project } from "./types.js";
-import { JSONFileSyncPreset } from "lowdb/node";
+import {LowSync} from 'lowdb';
+import {Project} from './types.js';
+import {JSONFileSyncPreset} from 'lowdb/node';
 import os from 'os';
 import fs from 'fs';
-import { join } from "path";
+import {join} from 'path';
 
 function getDBDir() {
-	const dir = join(os.homedir(), ".projector");
+	const dir = join(os.homedir(), '.projector');
 	if (!fs.existsSync(dir)) {
 		fs.mkdirSync(dir, {recursive: true});
 	}
-	return join(dir, "projects.json")
+	return join(dir, 'projects.json');
 }
 
 interface DBData {
 	defaultFolder: string;
-	projects: Project[]
+	projects: Project[];
 }
 
-const defaultProjects: DBData = { defaultFolder: "", projects: [] }
+const defaultProjects: DBData = {defaultFolder: '', projects: []};
 
 const dbDir = getDBDir();
 const db: LowSync<DBData> = JSONFileSyncPreset<DBData>(dbDir, defaultProjects);
 
 export function saveProject(project: Project) {
-	db.update(({projects}) => projects.push(project))
+	db.update(({projects}) => projects.push(project));
 	db.write();
 }
 
 export function getProjects(): Project[] {
-    return db.data.projects;
+	return db.data.projects;
 }
 
 export function getDefaultFolder() {
@@ -37,11 +37,18 @@ export function getDefaultFolder() {
 }
 
 export function alreadyExist(project: Project): boolean {
-	return getProjects().some(p => p.name === project.name)
+	return getProjects().some(p => p.name === project.name);
 }
 
 export function setDefaultFolder(path: string) {
 	db.data.defaultFolder = path;
+	db.write();
+}
+
+export function deleteProject(targetProject: Project) {
+	db.data.projects = db.data.projects.filter(
+		project => project.name !== targetProject.name,
+	);
 	db.write();
 }
 

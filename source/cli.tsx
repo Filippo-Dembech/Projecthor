@@ -5,14 +5,20 @@ import meow from 'meow';
 import SaveInterface from './SaveInterface/SaveInterface.js';
 import {execa, ExecaError} from 'execa';
 import chalk from 'chalk';
-import {getProjects, saveProject, setDefaultFolder} from './db.js';
+import {
+	deleteProject,
+	getProjects,
+	saveProject,
+	setDefaultFolder,
+} from './db.js';
 import {ProjectProvider} from './context/ProjectContext.js';
 import fs from 'fs';
 import {parseProjectSetupFile} from './parser.js';
 import {printWarning} from './utils.js';
-import { isValidProject } from './validation.js';
-import { error } from './errors/errors.js';
+import {isValidProject} from './validation.js';
+import {error} from './errors/errors.js';
 import Projects from './Projects.js';
+import readline from 'readline';
 
 const projects = getProjects();
 
@@ -22,16 +28,18 @@ const cli = meow(
 	  $ projector <command> <args[]> <options> 
 
 	Commands
-		save\t\t\t\tSave a project workspace
+		save\t\t\t\tSave a project workspace(s)
 		\t --source <file_path>\tProject setup file (.psup file) to setup new projects quickly
 
-		load <project_name[]>\t\tLoad the workspace of the passed projects
+		load <project_name[]>\t\tLoad the workspace of the passed project(s)
 		\t--shell, -sh\t\tWhich shell to use to run project setup commands
 
 		list\t\t\t\tList of all the available projects
 		\t--full, -f\t\tShow full projects data with
 
 		setdf\t\t\t\tSet a default folder where all project are stored
+		
+		delete <project_name[]>\t\tDelete the passed project workspace(s)
 	
 	Project Setup File
 	
@@ -100,7 +108,9 @@ function isExistingProject(projectName: string): boolean {
 }
 
 function existProjectFolder(projectName: string): boolean {
-	return fs.existsSync(projects.find(project => project.name === projectName)!.folder);	// Using '!' because project must exist because of previous 'isExistingProject' check
+	return fs.existsSync(
+		projects.find(project => project.name === projectName)!.folder,
+	); // Using '!' because project must exist because of previous 'isExistingProject' check
 }
 
 function getProjectFolder(projectName: string): string {
@@ -118,12 +128,14 @@ if (!hasCommand()) {
 			if (!fs.existsSync(projectSetupFile)) {
 				printWarning(`Project setup file '${projectSetupFile}' doesn't exist.`);
 			} else if (!projectSetupFile.endsWith('.psup')) {
-				printWarning("Wrong extension. Project setup files must have '.psup' extension.");
+				printWarning(
+					"Wrong extension. Project setup files must have '.psup' extension.",
+				);
 			} else {
 				try {
 					const projects = await parseProjectSetupFile(projectSetupFile);
 					for (let project of projects) {
-						const { isValid, errorMessage } = isValidProject(project);
+						const {isValid, errorMessage} = isValidProject(project);
 						if (!isValid) {
 							console.log(error(errorMessage));
 						} else {
@@ -150,9 +162,7 @@ if (!hasCommand()) {
 		if (cli.flags.full) {
 			console.log(projects);
 		} else {
-			render(
-				<Projects projects={projects} />
-			)
+			render(<Projects projects={projects} />);
 		}
 	} else if (command === 'setdf') {
 		if (args.length === 0) {
@@ -182,8 +192,14 @@ if (!hasCommand()) {
 				if (!isExistingProject(projectName)) {
 					console.log(`Project '${chalk.blue.bold(projectName)}' not found!`);
 				} else if (!existProjectFolder(projectName)) {
-					console.log(chalk.red.bold(`Project '${projectName}' folder '${getProjectFolder(projectName)}' doesn't exist.`))
-				}else {
+					console.log(
+						chalk.red.bold(
+							`Project '${projectName}' folder '${getProjectFolder(
+								projectName,
+							)}' doesn't exist.`,
+						),
+					);
+				} else {
 					console.log(`loading project '${chalk.blue.bold(projectName)}'...`);
 					const project = projects.find(
 						project => project.name === projectName,
@@ -203,6 +219,36 @@ if (!hasCommand()) {
 						);
 					} catch (err) {
 						console.error((err as ExecaError).originalMessage);
+					}
+				}
+			}
+		}
+	} else if (command === 'delete') {
+		if (!hasProjectArgs()) console.log('No project has been passed');
+		else {
+			for (let projectName of args) {
+				// check if the passed project exist
+				if (!isExistingProject(projectName)) {
+					console.log(`Project '${chalk.blue.bold(projectName)}' not found!`);
+				} else {
+					const project = projects.find(p => p.name === projectName)!; // using '!' because project must exist because of 'isExistingProject()' check before
+
+					const answer: string = await new Promise(resolve => {
+						const prompt = readline.createInterface({
+							input: process.stdin,
+							output: process.stdout,
+						});
+						prompt.question(
+							`Do you want to delete '${chalk.blue.bold(projectName)}': (y/n) `,
+							ans => {
+								prompt.close();
+								resolve(ans);
+							},
+						);
+					});
+
+					if (answer.toLowerCase() === 'y') {
+						deleteProject(project);
 					}
 				}
 			}
