@@ -8,6 +8,15 @@ interface ProjectsProps {
 }
 
 export default function Projects({projects}: ProjectsProps) {
+	if (projects.length === 0)
+		return (
+			<Text>
+				No Project is present. Use 'projector save' to save new projects. You
+				can also use '.psup' files with the '--source' option to save multiple
+				projects faster. Type 'projector --help, -h' for help.
+			</Text>
+		);
+
 	return (
 		<Box marginY={1} flexDirection="column" gap={1}>
 			<Text>

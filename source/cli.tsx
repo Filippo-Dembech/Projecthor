@@ -159,7 +159,12 @@ if (!hasCommand()) {
 			);
 		}
 	} else if (command === 'list') {
-		if (cli.flags.full) {
+		if (projects.length === 0) {
+				console.log("No Project is present.\n");
+				console.log("Use 'projector save' to save new projects."); 
+				console.log("You can also use '.psup' files with the '--source' option to save multiple projects faster.");
+				console.log("Type 'projector --help, -h' for help.");
+		} else if (cli.flags.full) {
 			console.log(projects);
 		} else {
 			render(<Projects projects={projects} />);
