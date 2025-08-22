@@ -17,3 +17,11 @@ export function warnWrongExtension() {
 export function warnNoDefaultFolderPassed() {
     printWarning('No default folder passed. Please insert a default folder path.');
 }
+
+export function warnNoProjectPassed() {
+    printWarning('No project has been passed');
+}
+
+export function warnProjectNotFound(projectName: string) {
+    printWarning(`Project '${chalk.bold(projectName)}' not found!`);
+}

@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import {getProjectFolder} from '../db.js';
 
 export function printError(message: string) {
 	console.log(chalk.red.bold(message));
@@ -11,5 +12,13 @@ export function alreadyExistingProjectError(projectName: string) {
 }
 
 export function errorFolderNotExist(folder: string) {
-	console.log(chalk.red(`Path '${chalk.bold(folder)}' doesn't exist.`));
+	printError(`Path '${chalk.bold(folder)}' doesn't exist.`);
+}
+
+export function errorProjectFolderNotExists(projectName: string) {
+	printError(
+		`Project '${projectName}' folder '${getProjectFolder(
+			projectName,
+		)}' doesn't exist.`,
+	);
 }

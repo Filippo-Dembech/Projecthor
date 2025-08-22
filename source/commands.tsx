@@ -3,15 +3,14 @@ import {ProjectProvider} from './context/ProjectContext.js';
 import SaveInterface from './SaveInterface/SaveInterface.js';
 import fs from 'fs';
 import chalk from 'chalk';
-import { printWarning, warnNoDefaultFolderPassed, warnNoSetupFileExists, warnWrongExtension } from './feedback/warnings.js';
+import { warnNoDefaultFolderPassed, warnNoProjectPassed, warnNoSetupFileExists, warnProjectNotFound, warnWrongExtension } from './feedback/warnings.js';
 import {parseProjectSetupFile} from './parser.js';
 import {isValidProject} from './validation.js';
-import {errorFolderNotExist, printError} from './feedback/errors.js';
+import {errorFolderNotExist, errorProjectFolderNotExists, printError} from './feedback/errors.js';
 import {
 	deleteProject,
 	existProjectFolder,
 	getDefaultFolder,
-	getProjectFolder,
 	getProjects,
 	isExistingProject,
 	saveProject,
@@ -23,7 +22,7 @@ import Projects from './Projects.js';
 import path from 'path';
 import {execa, ExecaError} from 'execa';
 import readline from 'readline';
-import { feedbackNoDefaultFolderPreset, feedbackNoProjectPresent, feedbackProjectSaved } from './feedback/feedbacks.js';
+import { feedbackLoadingProject, feedbackNoDefaultFolderPreset, feedbackNoProjectPresent, feedbackProjectLoadedSuccess, feedbackProjectSaved } from './feedback/feedbacks.js';
 
 export async function saveCommand(projectSetupFile?: string) {
 	if (projectSetupFile) {
@@ -84,28 +83,22 @@ export function getdfCommand() {
 	if (!defaultFolder) {
         feedbackNoDefaultFolderPreset();
 	} else {
-		console.log('default folder:', defaultFolder);
+		console.log(`default folder: ${chalk.blue.bold(defaultFolder)}`);
 	}
 }
 
 export async function loadCommand(args: string[], shellFlag?: string) {
 	// check if project name has been passed
-	if (args.length === 0) console.log('No project has been passed');
+	if (args.length === 0) warnNoProjectPassed();
 	else {
 		for (let projectName of args) {
 			// check if the passed project exist
 			if (!isExistingProject(projectName)) {
-				console.log(`Project '${chalk.blue.bold(projectName)}' not found!`);
+                warnProjectNotFound(projectName);
 			} else if (!existProjectFolder(projectName)) {
-				console.log(
-					chalk.red.bold(
-						`Project '${projectName}' folder '${getProjectFolder(
-							projectName,
-						)}' doesn't exist.`,
-					),
-				);
+                errorProjectFolderNotExists(projectName);
 			} else {
-				console.log(`loading project '${chalk.blue.bold(projectName)}'...`);
+                feedbackLoadingProject(projectName);
 				const project = getProjects().find(
 					project => project.name === projectName,
 				)!; // using '!' because project must exist because of 'isExistingProject()' check before
@@ -116,11 +109,7 @@ export async function loadCommand(args: string[], shellFlag?: string) {
 							: await execa({cwd: project.folder})`${command}`;
 						if (stdout) console.log(stdout);
 					}
-					console.log(
-						`'${project.name}' workspace ${chalk.green.bold(
-							'successfully',
-						)} loaded!`,
-					);
+                    feedbackProjectLoadedSuccess(project.name)
 				} catch (err) {
 					console.error((err as ExecaError).originalMessage);
 				}
@@ -157,12 +146,12 @@ export async function purgeCommand() {
 
 export async function deleteCommand(args: string[]) {
 	const projects = getProjects();
-	if (args.length === 0) console.log('No project has been passed');
+	if (args.length === 0) warnNoProjectPassed(); 
 	else {
 		for (let projectName of args) {
 			// check if the passed project exist
 			if (!isExistingProject(projectName)) {
-				console.log(`Project '${chalk.blue.bold(projectName)}' not found!`);
+                warnProjectNotFound(projectName);
 			} else {
 				const project = projects.find(p => p.name === projectName)!; // using '!' because project must exist because of 'isExistingProject()' check before
 

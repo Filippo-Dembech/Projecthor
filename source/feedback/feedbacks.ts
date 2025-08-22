@@ -25,3 +25,13 @@ export function feedbackNoDefaultFolderPreset() {
 	);
 	console.log("For further help use 'projector --help, -h'.");
 }
+
+export function feedbackLoadingProject(projectName: string) {
+	console.log(`loading project '${chalk.blue.bold(projectName)}'...`);
+}
+
+export function feedbackProjectLoadedSuccess(projectName: string) {
+	console.log(
+		`'${projectName}' workspace ${chalk.green.bold('successfully')} loaded!`,
+	);
+}
