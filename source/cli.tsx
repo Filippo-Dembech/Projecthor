@@ -7,6 +7,7 @@ import {execa, ExecaError} from 'execa';
 import chalk from 'chalk';
 import {
 	deleteProject,
+	getDefaultFolder,
 	getProjects,
 	saveProject,
 	setDefaultFolder,
@@ -19,6 +20,7 @@ import {isValidProject} from './validation.js';
 import {error} from './errors/errors.js';
 import Projects from './Projects.js';
 import readline from 'readline';
+import path from 'path';
 
 const projects = getProjects();
 
@@ -178,7 +180,7 @@ if (!hasCommand()) {
 			);
 		} else {
 			const defaultFolderPath = args[0]!;
-			if (!fs.existsSync(defaultFolderPath)) {
+			if (!fs.existsSync(path.resolve(defaultFolderPath))) {
 				console.log(
 					chalk.yellow(
 						`Path '${chalk.bold(defaultFolderPath)}' doesn't exist.`,
@@ -188,6 +190,8 @@ if (!hasCommand()) {
 				setDefaultFolder(defaultFolderPath);
 			}
 		}
+	} else if (command === "getdf"){
+		console.log("default folder:", getDefaultFolder());
 	} else if (command === 'load') {
 		// check if project name has been passed
 		if (!hasProjectArgs()) console.log('No project has been passed');

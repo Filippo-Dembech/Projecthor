@@ -23,3 +23,9 @@ $ projector --help
     $ projector --name=Jane
     Hello, Jane
 ```
+
+## Known Bugs
+
+- `cd` can't be used.
+- Use `''` for commands
+- Default folder paths can be sometimes recognized as valid even if they are not (e.g. when path has white spaces in it). It must be something related with the implementation of `fs.existsSync()` function.
