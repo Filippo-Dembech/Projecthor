@@ -3,10 +3,10 @@ import {ProjectProvider} from './context/ProjectContext.js';
 import SaveInterface from './SaveInterface/SaveInterface.js';
 import fs from 'fs';
 import chalk from 'chalk';
-import { warnNoSetupFileExists, warnWrongExtension } from './feedback/warnings.js';
+import { printWarning, warnNoDefaultFolderPassed, warnNoSetupFileExists, warnWrongExtension } from './feedback/warnings.js';
 import {parseProjectSetupFile} from './parser.js';
 import {isValidProject} from './validation.js';
-import {printError} from './feedback/errors.js';
+import {errorFolderNotExist, printError} from './feedback/errors.js';
 import {
 	deleteProject,
 	existProjectFolder,
@@ -23,7 +23,7 @@ import Projects from './Projects.js';
 import path from 'path';
 import {execa, ExecaError} from 'execa';
 import readline from 'readline';
-import { feedbackProjectSaved } from './feedback/feedbacks.js';
+import { feedbackNoDefaultFolderPreset, feedbackNoProjectPresent, feedbackProjectSaved } from './feedback/feedbacks.js';
 
 export async function saveCommand(projectSetupFile?: string) {
 	if (projectSetupFile) {
@@ -44,7 +44,7 @@ export async function saveCommand(projectSetupFile?: string) {
 					}
 				}
 			} catch (err) {
-				console.log(err);
+                console.log(err);
 			}
 		}
 	} else {
@@ -58,12 +58,7 @@ export async function saveCommand(projectSetupFile?: string) {
 
 export function listCommand(projects: Project[], fullFlag?: boolean) {
 	if (projects.length === 0) {
-		console.log('No Project is present.\n');
-		console.log("Use 'projector save' to save new projects.");
-		console.log(
-			"You can also use '.psup' files with the '--source' option to save multiple projects faster.",
-		);
-		console.log("Type 'projector --help, -h' for help.");
+        feedbackNoProjectPresent();
 	} else if (fullFlag) {
 		console.log(projects);
 	} else {
@@ -73,17 +68,11 @@ export function listCommand(projects: Project[], fullFlag?: boolean) {
 
 export function setdfCommand(args: string[]) {
 	if (args.length === 0) {
-		console.log(
-			chalk.yellow(
-				'No default folder passed. Please insert a default folder path.',
-			),
-		);
+        warnNoDefaultFolderPassed();
 	} else {
 		const defaultFolderPath = args[0]!;
 		if (!fs.existsSync(path.resolve(defaultFolderPath))) {
-			console.log(
-				chalk.yellow(`Path '${chalk.bold(defaultFolderPath)}' doesn't exist.`),
-			);
+            errorFolderNotExist(defaultFolderPath);
 		} else {
 			setDefaultFolder(defaultFolderPath);
 		}
@@ -93,11 +82,7 @@ export function setdfCommand(args: string[]) {
 export function getdfCommand() {
 	const defaultFolder = getDefaultFolder();
 	if (!defaultFolder) {
-		console.log('No default folder has been set yet.\n');
-		console.log(
-			"To set a default folder use 'projector setdf <default_folder_path>' command.",
-		);
-		console.log("For further help use 'projector --help, -h'.");
+        feedbackNoDefaultFolderPreset();
 	} else {
 		console.log('default folder:', defaultFolder);
 	}
@@ -147,12 +132,7 @@ export async function loadCommand(args: string[], shellFlag?: string) {
 export async function purgeCommand() {
 	const projects = getProjects();
 	if (projects.length === 0) {
-		console.log('No Project is present.\n');
-		console.log("Use 'projector save' to save new projects.");
-		console.log(
-			"You can also use '.psup' files with the '--source' option to save multiple projects faster.",
-		);
-		console.log("Type 'projector --help, -h' for help.");
+        feedbackNoProjectPresent();
 	} else {
 		const answer: string = await new Promise(resolve => {
 			const prompt = readline.createInterface({

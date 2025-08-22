@@ -1,13 +1,15 @@
-import chalk from "chalk"
-
-export function printWarning(message: string) {
-	console.log(chalk.yellow(message));
-}
+import chalk from 'chalk';
 
 export function printError(message: string) {
-    console.log(chalk.red.bold(message));
+	console.log(chalk.red.bold(message));
 }
 
 export function alreadyExistingProjectError(projectName: string) {
-    printError(`Project '${projectName}' already exist. Can't create another project instance.`);
+	printError(
+		`Project '${projectName}' already exist. Can't create another project instance.`,
+	);
+}
+
+export function errorFolderNotExist(folder: string) {
+	console.log(chalk.red(`Path '${chalk.bold(folder)}' doesn't exist.`));
 }

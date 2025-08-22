@@ -13,3 +13,7 @@ export function warnWrongExtension() {
 		"Wrong extension. Project setup files must have '.psup' extension.",
 	);
 }
+
+export function warnNoDefaultFolderPassed() {
+    printWarning('No default folder passed. Please insert a default folder path.');
+}
