@@ -1,0 +1,5 @@
+PROJECT:
+    NAME: first-project
+    FOLDER: C://users/filippo dembech/cs/projects/test
+    COMMANDS:
+        code .

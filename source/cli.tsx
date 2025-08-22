@@ -8,7 +8,10 @@ import chalk from 'chalk';
 import {getProjects, saveProject, setDefaultFolder} from './db.js';
 import {ProjectProvider} from './context/ProjectContext.js';
 import fs from 'fs';
-import { parseProjectSetupFile } from './parser.js';
+import {parseProjectSetupFile} from './parser.js';
+import {printWarning} from './utils.js';
+import { isValidProject } from './validation.js';
+import { error } from './errors/errors.js';
 
 const projects = getProjects();
 
@@ -95,7 +98,6 @@ function isExistingProject(projectName: string): boolean {
 	return projects.some(project => project.name === projectName);
 }
 
-
 if (!hasCommand()) {
 	cli.showHelp();
 } else {
@@ -105,27 +107,24 @@ if (!hasCommand()) {
 		const projectSetupFile = cli.flags.source;
 		if (projectSetupFile) {
 			if (!fs.existsSync(projectSetupFile)) {
-				console.log(
-					chalk.yellow(
-						`Project setup file '${projectSetupFile}' doesn't exist.`,
-					),
-				);
+				printWarning(`Project setup file '${projectSetupFile}' doesn't exist.`);
 			} else if (!projectSetupFile.endsWith('.psup')) {
-				console.log(
-					chalk.yellow(
-						"Wrong extension. Project setup files must have '.psup' extension.",
-					),
-				);
+				printWarning("Wrong extension. Project setup files must have '.psup' extension.");
 			} else {
 				try {
 					const projects = await parseProjectSetupFile(projectSetupFile);
 					for (let project of projects) {
-						saveProject(project);
-						console.log(
-							`${chalk.green('OK')}: Project '${chalk.green(
-								project.name,
-							)}' has been successfully saved!`,
-						);
+						const { isValid, errorMessage } = isValidProject(project);
+						if (!isValid) {
+							console.log(error(errorMessage));
+						} else {
+							saveProject(project);
+							console.log(
+								`${chalk.green('OK')}: Project '${chalk.green(
+									project.name,
+								)}' has been successfully saved!`,
+							);
+						}
 					}
 				} catch (err) {
 					console.log(err);

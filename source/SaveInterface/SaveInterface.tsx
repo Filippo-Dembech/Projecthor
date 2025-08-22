@@ -1,14 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import {Box, useApp, useFocusManager, useInput} from 'ink';
-import {getProjects, saveProject} from '../db.js';
-import chalk from 'chalk';
+import {alreadyExist, saveProject} from '../db.js';
 import Title from './Title.js';
 import NameInput from './NameInput.js';
 import FolderInput from './FolderInput.js';
 import CommandsInput from './CommandsInput.js';
 import {useProject} from '../context/ProjectContext.js';
-
-const error = chalk.red.bold;
+import { alreadyExistingProjectError } from '../errors/errors.js';
 
 export default function SaveInterface() {
 	const {project} = useProject();
@@ -16,9 +14,6 @@ export default function SaveInterface() {
 	const [currentInput, setCurrentInput] = useState('name');
 	const {focus} = useFocusManager();
 	const {exit} = useApp();
-	const errorMessage = error(
-		`Project '${project.name}' already exist. Can't create another project instance.`,
-	);
 
 	useEffect(() => {
 		focus(currentInput);
@@ -26,9 +21,9 @@ export default function SaveInterface() {
 
 	useInput(async (input, key) => {
 		if (input === 's' && key.ctrl) {
-			if (getProjects().some(p => p.name === project.name)) {
+			if (alreadyExist(project)) {
 				exit();
-				console.log(errorMessage);
+				alreadyExistingProjectError(project.name);
 			} else {
 				saveProject(project);
 				exit();

@@ -56,3 +56,4 @@ export async function parseProjectSetupFile(filePath: string): Promise<Project[]
 
 	return projects;
 }
+
