@@ -4,13 +4,12 @@ import {execa, ExecaError} from 'execa';
 import chalk from 'chalk';
 import {
 	deleteProject,
-	getDefaultFolder,
 	getProjects,
 } from './db.js';
 import fs from 'fs';
 import readline from 'readline';
 import {helpMessage} from './help.js';
-import { listCommand, saveCommand, setdfCommand } from './commands.js';
+import { getdfCommand, listCommand, saveCommand, setdfCommand } from './commands.js';
 
 const projects = getProjects();
 
@@ -66,16 +65,7 @@ if (!hasCommand()) {
 	} else if (command === 'setdf') {
 		setdfCommand(args);
 	} else if (command === 'getdf') {
-		const defaultFolder = getDefaultFolder();
-		if (!defaultFolder) {
-			console.log('No default folder has been set yet.\n');
-			console.log(
-				"To set a default folder use 'projector setdf <default_folder_path>' command.",
-			);
-			console.log("For further help use 'projector --help, -h'.");
-		} else {
-			console.log('default folder:', getDefaultFolder());
-		}
+		getdfCommand();
 	} else if (command === 'load') {
 		// check if project name has been passed
 		if (!hasProjectArgs()) console.log('No project has been passed');

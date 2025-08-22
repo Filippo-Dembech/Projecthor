@@ -7,7 +7,7 @@ import {printWarning} from './utils.js';
 import {parseProjectSetupFile} from './parser.js';
 import {isValidProject} from './validation.js';
 import {error} from './errors/errors.js';
-import {saveProject, setDefaultFolder} from './db.js';
+import {getDefaultFolder, saveProject, setDefaultFolder} from './db.js';
 import {render} from 'ink';
 import {Project} from './types.js';
 import Projects from './Projects.js';
@@ -81,5 +81,18 @@ export function setdfCommand(args: string[]) {
 		} else {
 			setDefaultFolder(defaultFolderPath);
 		}
+	}
+}
+
+export function getdfCommand() {
+	const defaultFolder = getDefaultFolder();
+	if (!defaultFolder) {
+		console.log('No default folder has been set yet.\n');
+		console.log(
+			"To set a default folder use 'projector setdf <default_folder_path>' command.",
+		);
+		console.log("For further help use 'projector --help, -h'.");
+	} else {
+		console.log('default folder:', defaultFolder);
 	}
 }
