@@ -90,13 +90,21 @@ function hasCommand(): boolean {
 	return cli.input.length !== 0;
 }
 
-function hasProjects(): boolean {
+function hasProjectArgs(): boolean {
 	const [_, ...args] = cli.input;
 	return args.length !== 0;
 }
 
 function isExistingProject(projectName: string): boolean {
 	return projects.some(project => project.name === projectName);
+}
+
+function existProjectFolder(projectName: string): boolean {
+	return fs.existsSync(projects.find(project => project.name === projectName)!.folder);	// Using '!' because project must exist because of previous 'isExistingProject' check
+}
+
+function getProjectFolder(projectName: string): string {
+	return projects.find(project => project.name === projectName)!.folder;
 }
 
 if (!hasCommand()) {
@@ -145,9 +153,6 @@ if (!hasCommand()) {
 			render(
 				<Projects projects={projects} />
 			)
-			// for (let project of projects) {
-			// 	console.log(project.name);
-			// }
 		}
 	} else if (command === 'setdf') {
 		if (args.length === 0) {
@@ -170,13 +175,15 @@ if (!hasCommand()) {
 		}
 	} else if (command === 'load') {
 		// check if project name has been passed
-		if (!hasProjects()) console.log('No project has been passed');
+		if (!hasProjectArgs()) console.log('No project has been passed');
 		else {
 			for (let projectName of args) {
 				// check if the passed project exist
-				if (!isExistingProject(projectName))
+				if (!isExistingProject(projectName)) {
 					console.log(`Project '${chalk.blue.bold(projectName)}' not found!`);
-				else {
+				} else if (!existProjectFolder(projectName)) {
+					console.log(chalk.red.bold(`Project '${projectName}' folder '${getProjectFolder(projectName)}' doesn't exist.`))
+				}else {
 					console.log(`loading project '${chalk.blue.bold(projectName)}'...`);
 					const project = projects.find(
 						project => project.name === projectName,
