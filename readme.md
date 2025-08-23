@@ -21,7 +21,7 @@ Each project setup has three fields:
 
 - **Name** -  used by `projector` as project identifier
 - **Folder** - usually the project root folder; all setup commands run here
-- **Commands** - list of commands to execute in the folder 
+- **Commands** - list of commands to execute in the folder
 
 ## Documentation
 
@@ -53,9 +53,9 @@ projector save --source project-setups.psup
 
 `.psup` files require a specific structure (similar to `.yaml`) with the following fields:
 
-- `PROJECT` - marks the start of a project setup definition 
+- `PROJECT` - marks the start of a project setup definition
 - `NAME` - project name
-- `FOLDER` - root folder of the project 
+- `FOLDER` - root folder of the project
 - `COMMANDS` - list of commands to run to setup the project
 
 Single setup example:
