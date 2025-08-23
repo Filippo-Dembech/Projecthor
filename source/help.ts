@@ -8,7 +8,7 @@ export const helpMessage =
 		\t --source <file_path>\tProject setup file (.psup file) to setup new projects quickly
 
 		load <project_name[]>\t\tLoad the workspace of the passed project(s)
-		\t--shell, -sh\t\tWhich shell to use to run project setup commands
+		\t--shell, -s\t\tWhich shell to use to run project setup commands
 
 		delete <project_name[]>\t\tDelete the passed project workspace(s)
 

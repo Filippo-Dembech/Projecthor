@@ -100,6 +100,12 @@ projector load [project-name]
 
 This will run all the [commands](#design) to set up the project.
 
+**NOTE**: If you want to run setup commands in a particular shell run the `--shell` flag. For example:
+
+```bash
+projector load [projec-name] --shell powershell.exe
+```
+
 ### Default Folder
 
 If you prefer using the projector [interface](#interface) to save a project, you might want to define a **Default Folder** where all your projects live.
@@ -124,7 +130,7 @@ In order to unset the default folder run:
 projector setdf ""
 ```
 
-### List All Projects
+### List All Project
 
 To check which projects have already been [save](#save-a-project), run:
 
@@ -133,6 +139,30 @@ projector list
 ```
 
 This will output a list of all available projects:
+
+![alt text](image.png)
+
+If you want more details about the all the projects, run:
+
+```bash
+projector list --full
+```
+
+**NOTE**: When a project directory is _gray_, it means that that project folder doesn't exist anymore. If there are multiple "orphan" projects you can delete them all in once just by running:
+
+```bash
+projector purge
+```
+
+Or just delete one by one with the [`delete`](#delete-a-project) command.
+
+### Delete a Project
+
+If you want to delete a project, run:
+
+```bash
+projector delete [project-name]
+```
 
 ## Known Bugs
 
