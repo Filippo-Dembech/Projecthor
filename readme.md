@@ -166,6 +166,5 @@ projector delete [project-name]
 
 ## Known Bugs
 
-- `cd` can't be used.
-- Use `''` for commands
+- `cd` can't be used as command (this is why I opted to associate a folder to each project).
 - Default folder paths can be sometimes recognized as valid even if they are not (e.g. when path has white spaces in it). It must be something related with the implementation of `fs.existsSync()` function.
