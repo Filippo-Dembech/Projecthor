@@ -21,6 +21,8 @@ export default function SaveInterface() {
 
 	useInput(async (input, key) => {
 		if (input === 's' && key.ctrl) {
+			const isProjectSet = project.name && project.folder && project.setupCommands.length > 0;
+			if (!isProjectSet) return;
 			if (alreadyExist(project)) {
 				exit();
 				error.alreadyExistingProject(project.name);
