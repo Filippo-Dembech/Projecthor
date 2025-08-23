@@ -39,6 +39,7 @@ import {
 	feedbackProjectLoadedSuccess,
 	feedbackProjectSaved,
 } from './feedback/feedbacks.js';
+import {ask} from './utils.js';
 
 export async function saveCommand(projectSetupFile?: string) {
 	if (projectSetupFile) {
@@ -140,16 +141,9 @@ export async function purgeCommand() {
 	if (projects.length === 0) {
 		feedbackNoProjectPresent();
 	} else {
-		const answer: string = await new Promise(resolve => {
-			const prompt = readline.createInterface({
-				input: process.stdin,
-				output: process.stdout,
-			});
-			prompt.question(`Are you sure you wanna purge the db? (y/n) `, ans => {
-				prompt.close();
-				resolve(ans);
-			});
-		});
+		const answer: string = await ask(
+			'Are you sure you wanna purge the db? (y/n)',
+		);
 
 		if (answer.toLowerCase() === 'y') {
 			projects.forEach(project => {

@@ -15,7 +15,7 @@ export const helpMessage =
 		list\t\t\t\tList of all the available projects
 		\t--full, -f\t\tShow full projects data with
 
-		setdf\t\t\t\tSet a default folder where all project are stored
+		setdf\t\t\t\tSet a default folder where all projects are stored
 
 		getdf\t\t\t\tGet the current default folder
 	
