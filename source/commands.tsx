@@ -3,10 +3,20 @@ import {ProjectProvider} from './context/ProjectContext.js';
 import SaveInterface from './SaveInterface/SaveInterface.js';
 import fs from 'fs';
 import chalk from 'chalk';
-import { warnNoDefaultFolderPassed, warnNoProjectPassed, warnNoSetupFileExists, warnProjectNotFound, warnWrongExtension } from './feedback/warnings.js';
+import {
+	warnNoDefaultFolderPassed,
+	warnNoProjectPassed,
+	warnNoSetupFileExists,
+	warnProjectNotFound,
+	warnWrongExtension,
+} from './feedback/warnings.js';
 import {parseProjectSetupFile} from './parser.js';
 import {isValidProject} from './validation.js';
-import {errorFolderNotExist, errorProjectFolderNotExists, printError} from './feedback/errors.js';
+import {
+	errorFolderNotExist,
+	errorProjectFolderNotExists,
+	printError,
+} from './feedback/errors.js';
 import {
 	deleteProject,
 	existProjectFolder,
@@ -22,28 +32,34 @@ import Projects from './Projects.js';
 import path from 'path';
 import {execa, ExecaError} from 'execa';
 import readline from 'readline';
-import { feedbackLoadingProject, feedbackNoDefaultFolderPreset, feedbackNoProjectPresent, feedbackProjectLoadedSuccess, feedbackProjectSaved } from './feedback/feedbacks.js';
+import {
+	feedbackLoadingProject,
+	feedbackNoDefaultFolderPreset,
+	feedbackNoProjectPresent,
+	feedbackProjectLoadedSuccess,
+	feedbackProjectSaved,
+} from './feedback/feedbacks.js';
 
 export async function saveCommand(projectSetupFile?: string) {
 	if (projectSetupFile) {
 		if (!fs.existsSync(projectSetupFile)) {
-            warnNoSetupFileExists(projectSetupFile);
+			warnNoSetupFileExists(projectSetupFile);
 		} else if (!projectSetupFile.endsWith('.psup')) {
-            warnWrongExtension();
+			warnWrongExtension();
 		} else {
 			try {
 				const projects = await parseProjectSetupFile(projectSetupFile);
-				for (let project of projects) {
+				projects.forEach(project => {
 					const {isValid, errorMessage} = isValidProject(project);
 					if (!isValid) {
-                        printError(errorMessage!);
+						printError(errorMessage!);
 					} else {
 						saveProject(project);
-                        feedbackProjectSaved(project);
+						feedbackProjectSaved(project);
 					}
-				}
+				});
 			} catch (err) {
-                console.log(err);
+				console.log(err);
 			}
 		}
 	} else {
@@ -57,7 +73,7 @@ export async function saveCommand(projectSetupFile?: string) {
 
 export function listCommand(projects: Project[], fullFlag?: boolean) {
 	if (projects.length === 0) {
-        feedbackNoProjectPresent();
+		feedbackNoProjectPresent();
 	} else if (fullFlag) {
 		console.log(projects);
 	} else {
@@ -67,11 +83,12 @@ export function listCommand(projects: Project[], fullFlag?: boolean) {
 
 export function setdfCommand(args: string[]) {
 	if (args.length === 0) {
-        warnNoDefaultFolderPassed();
+		warnNoDefaultFolderPassed();
+		return;
 	} else {
 		const defaultFolderPath = args[0]!;
 		if (!fs.existsSync(path.resolve(defaultFolderPath))) {
-            errorFolderNotExist(defaultFolderPath);
+			errorFolderNotExist(defaultFolderPath);
 		} else {
 			setDefaultFolder(defaultFolderPath);
 		}
@@ -81,24 +98,24 @@ export function setdfCommand(args: string[]) {
 export function getdfCommand() {
 	const defaultFolder = getDefaultFolder();
 	if (!defaultFolder) {
-        feedbackNoDefaultFolderPreset();
+		feedbackNoDefaultFolderPreset();
 	} else {
 		console.log(`default folder: ${chalk.blue.bold(defaultFolder)}`);
 	}
 }
 
-export async function loadCommand(args: string[], shellFlag?: string) {
+export function loadCommand(projectNames: string[], shellFlag?: string) {
 	// check if project name has been passed
-	if (args.length === 0) warnNoProjectPassed();
+	if (projectNames.length === 0) warnNoProjectPassed();
 	else {
-		for (let projectName of args) {
+		projectNames.forEach(async projectName => {
 			// check if the passed project exist
 			if (!isExistingProject(projectName)) {
-                warnProjectNotFound(projectName);
+				warnProjectNotFound(projectName);
 			} else if (!existProjectFolder(projectName)) {
-                errorProjectFolderNotExists(projectName);
+				errorProjectFolderNotExists(projectName);
 			} else {
-                feedbackLoadingProject(projectName);
+				feedbackLoadingProject(projectName);
 				const project = getProjects().find(
 					project => project.name === projectName,
 				)!; // using '!' because project must exist because of 'isExistingProject()' check before
@@ -109,19 +126,19 @@ export async function loadCommand(args: string[], shellFlag?: string) {
 							: await execa({cwd: project.folder})`${command}`;
 						if (stdout) console.log(stdout);
 					}
-                    feedbackProjectLoadedSuccess(project.name)
+					feedbackProjectLoadedSuccess(project.name);
 				} catch (err) {
 					console.error((err as ExecaError).originalMessage);
 				}
 			}
-		}
+		});
 	}
 }
 
 export async function purgeCommand() {
 	const projects = getProjects();
 	if (projects.length === 0) {
-        feedbackNoProjectPresent();
+		feedbackNoProjectPresent();
 	} else {
 		const answer: string = await new Promise(resolve => {
 			const prompt = readline.createInterface({
@@ -135,23 +152,23 @@ export async function purgeCommand() {
 		});
 
 		if (answer.toLowerCase() === 'y') {
-			for (let project of projects) {
+			projects.forEach(project => {
 				if (!fs.existsSync(project.folder)) {
 					deleteProject(project);
 				}
-			}
+			});
 		}
 	}
 }
 
-export async function deleteCommand(args: string[]) {
+export async function deleteCommand(projectNames: string[]) {
 	const projects = getProjects();
-	if (args.length === 0) warnNoProjectPassed(); 
+	if (projectNames.length === 0) warnNoProjectPassed();
 	else {
-		for (let projectName of args) {
+		projectNames.forEach(async projectName => {
 			// check if the passed project exist
 			if (!isExistingProject(projectName)) {
-                warnProjectNotFound(projectName);
+				warnProjectNotFound(projectName);
 			} else {
 				const project = projects.find(p => p.name === projectName)!; // using '!' because project must exist because of 'isExistingProject()' check before
 
@@ -173,6 +190,6 @@ export async function deleteCommand(args: string[]) {
 					deleteProject(project);
 				}
 			}
-		}
+		});
 	}
 }
