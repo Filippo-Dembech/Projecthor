@@ -6,7 +6,7 @@ import NameInput from './NameInput.js';
 import FolderInput from './FolderInput.js';
 import CommandsInput from './CommandsInput.js';
 import {useProject} from '../context/ProjectContext.js';
-import { alreadyExistingProjectError } from '../feedback/errors.js';
+import { error } from '../feedback/errors.js';
 
 export default function SaveInterface() {
 	const {project} = useProject();
@@ -23,7 +23,7 @@ export default function SaveInterface() {
 		if (input === 's' && key.ctrl) {
 			if (alreadyExist(project)) {
 				exit();
-				alreadyExistingProjectError(project.name);
+				error.alreadyExistingProject(project.name);
 			} else {
 				saveProject(project);
 				exit();
