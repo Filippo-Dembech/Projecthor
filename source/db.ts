@@ -6,7 +6,7 @@ import fs from 'fs';
 import {join} from 'path';
 
 function getDBDir() {
-	const dir = join(os.homedir(), '.projector');
+	const dir = join(os.homedir(), '.projecthor');
 	if (!fs.existsSync(dir)) {
 		fs.mkdirSync(dir, {recursive: true});
 	}

@@ -1,7 +1,7 @@
 export const helpMessage = 
 `
 	Usage
-	  $ projector <command> <args[]> <options> 
+	  $ projecthor <command> <args[]> <options> 
 
 	Commands
 		save\t\t\t\tSave a project workspace(s)
@@ -22,7 +22,7 @@ export const helpMessage =
 	Project Setup File
 	
 		Project setup files (.psup) are files with a specific syntax that can be used
-		to save one or more projects without using 'projector' save interface. They require
+		to save one or more projects without using 'projecthor' save interface. They require
 		a specific format:
 
 		PROJECT:
