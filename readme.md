@@ -27,6 +27,12 @@ Working on multiple projects at once? Tired of juggling windows or resetting wor
 
 Projecthor runs for you all the commands required to set your projects up and running.
 
+## Requirements
+
+- **Node.js** >= 16
+- **npm** or **yarn** (to install dependencies)
+- Optional but recommended: **Git** (if cloning the repo)
+
 ## Install
 
 ```bash
