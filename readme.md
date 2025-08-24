@@ -2,21 +2,18 @@
 
 ## Table of Content
 
-- [projector](#projector)
-  - [Table of Content](#table-of-content)
-  - [Purpose](#purpose)
-  - [Install](#install)
-  - [Design](#design)
-  - [Documentation](#documentation)
-    - [Save a Project](#save-a-project)
-      - [Interface](#interface)
-      - [Use a `.psup` File](#use-a-psup-file)
-    - [Load a Project](#load-a-project)
-    - [Default Folder](#default-folder)
-    - [List All Projects](#list-all-projects)
-    - [Delete a Project](#delete-a-project)
-  - [Known Bugs](#known-bugs)
-
+- [Purpose](#purpose)
+- [Install](#install)
+- [Design](#design)
+- [Documentation](#documentation)
+  - [Save a Project](#save-a-project)
+    - [Interface](#interface)
+    - [Use a `.psup` File](#use-a-psup-file)
+  - [Load a Project](#load-a-project)
+  - [Default Folder](#default-folder)
+  - [List All Projects](#list-all-projects)
+  - [Delete a Project](#delete-a-project)
+- [Known Bugs](#known-bugs)
 
 ## Purpose
 
