@@ -14,6 +14,7 @@
   - [List All Projects](#list-all-projects)
   - [Delete a Project](#delete-a-project)
 - [Known Bugs](#known-bugs)
+- [New Features and Bugs](#new-features-and-bugs)
 
 ## Purpose
 
@@ -182,6 +183,6 @@ projector delete [project-name]
 - `cd` can't be used as command (this is why I opted to associate a folder to each project).
 - Default folder paths can be sometimes recognized as valid even if they are not (e.g. when path has white spaces in it). It must be something related with the implementation of `fs.existsSync()` function.
 
-## Contact Me
+## New Features and Bugs
 
 If you need **new features** or **critical bug fixes** feel free to open an issue or a pull request.
