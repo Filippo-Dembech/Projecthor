@@ -28,7 +28,7 @@ Projector runs for you all the commands required to set your projects up and run
 ## Install
 
 ```bash
-npm install --global projector
+npm install --global projecthor
 ```
 
 ## Design

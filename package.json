@@ -1,5 +1,5 @@
 {
-	"name": "projector",
+	"name": "projecthor",
 	"description": "Save, manage, and run project setup commands automatically from the CLI.",
 	"author": {
 		"name": "Filippo Dembech",
@@ -18,6 +18,10 @@
 		"developer-tools",
 		"terminal"
 	],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Filippo-Dembech/Projector.git"
+	},
 	"version": "0.0.0",
 	"license": "MIT",
 	"bin": "dist/cli.js",
