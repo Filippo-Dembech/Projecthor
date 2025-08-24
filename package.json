@@ -1,5 +1,23 @@
 {
 	"name": "projector",
+	"description": "Save, manage, and run project setup commands automatically from the CLI.",
+	"author": {
+		"name": "Filippo Dembech",
+		"email": "filippodembechwork@gmail.com",
+		"url": "https://filippo-dembech.github.io/portfolio/"
+	},
+	"keywords":[
+		"cli",
+		"commands",
+		"automation",
+		"project-setup",
+		"productivity",
+		"scripts",
+		"task-runner",
+		"workflow",
+		"developer-tools",
+		"terminal"
+	],
 	"version": "0.0.0",
 	"license": "MIT",
 	"bin": "dist/cli.js",

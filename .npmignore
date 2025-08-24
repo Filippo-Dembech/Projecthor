@@ -1,0 +1,9 @@
+# source & dev-only stuff
+src
+tsconfig.json
+*.ts
+*.map
+
+# misc
+.gitignore
+npm-debug.log
