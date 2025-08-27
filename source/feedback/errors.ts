@@ -25,7 +25,7 @@ export const error = {
 	},
 	wrongCommand(command: string) {
 		console.error(`Some error occured while running '${command}'`);
-		console.error('Check whether you are running your commands in the right sell.');
+		console.error('Check whether your command syntax is right or you are running your commands with the right shell.');
 		console.error('Use the --shell flag to define the right shell.');
 	},
 	unknownError() {
