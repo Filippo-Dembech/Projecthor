@@ -22,7 +22,7 @@
 		"type": "git",
 		"url": "git+https://github.com/Filippo-Dembech/Projecthor.git"
 	},
-	"version": "0.0.5",
+	"version": "0.0.6",
 	"license": "MIT",
 	"bin": { "projecthor": "dist/cli.js"},
 	"type": "module",
