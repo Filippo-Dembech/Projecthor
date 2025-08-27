@@ -20,7 +20,7 @@ import {render} from 'ink';
 import {Project} from './types.js';
 import Projects from './Projects.js';
 import path from 'path';
-import {execa, ExecaError} from 'execa';
+import {execa} from 'execa';
 import readline from 'readline';
 import {feedback} from './feedback/feedbacks.js';
 import {ask} from './utils.js';
@@ -106,14 +106,24 @@ export function loadCommand(projectNames: string[], shellFlag?: string) {
 				)!; // using '!' because project must exist because of 'isExistingProject()' check before
 				try {
 					for (let command of project.setupCommands) {
-						const {stdout} = shellFlag
-							? await execa({cwd: project.folder, shellFlag})`${command}`
+						if (shellFlag) console.log("THERE IS SHELL FLAG");
+						const {stdout, stderr} = shellFlag
+							? await execa({cwd: project.folder, shell: shellFlag})`${command}`
 							: await execa({cwd: project.folder})`${command}`;
-						if (stdout) console.log(stdout);
+						if (stdout) {
+							console.log("return stdout:")
+							console.log(stdout);
+						}
+						if (stderr) {
+							console.log("return stderr")
+							console.error(stderr);
+						}
 					}
 					feedback.projectLoadedSuccess(project.name);
 				} catch (err) {
-					console.error((err as ExecaError).originalMessage);
+					console.error("Some error occurs.");
+					console.error("Check whether you are running your commands in the right sell.");
+					console.error("Use the --shell flag to define the right shell.");
 				}
 			}
 		});
