@@ -27,11 +27,15 @@ export const feedback = {
 		console.log("For further help use 'projecthor --help, -h'.");
 	},
 	loadingProject(projectName: string) {
-		console.log(`loading project '${chalk.blue.bold(projectName)}'...`);
+		console.log(`loading project '${chalk.blue.bold(projectName)}'`);
+		console.log(chalk.gray(`==================${"=".repeat(projectName.length)}`))
 	},
 	projectLoadedSuccess(projectName: string) {
 		console.log(
 			`'${projectName}' workspace ${chalk.green.bold('successfully')} loaded!`,
 		);
 	},
+	runningCommand(command: string) {
+		console.log(chalk.cyanBright.bold("running > "), command)
+	}
 };
